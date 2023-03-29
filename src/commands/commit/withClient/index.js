@@ -9,8 +9,17 @@ import { type Answers } from '../prompts'
 
 const withClient = async (answers: Answers): Promise<void> => {
   try {
-    const scope = answers.scope ? `(${answers.scope}): ` : ''
-    const title = `${answers.gitmoji} ${scope}${answers.title}`
+    const scope = answers.scope ? `(${answers.scope})` : ''
+    const splitTitle = answers.title.split(':').map((word) => word.trim())
+    if (splitTitle.length != 2) {
+      return console.log(
+        chalk.red(
+          `\nsplit title length is ${splitTitle.length}, please check your title. ` +
+            `Sample ---> feat: add a feature.`
+        )
+      )
+    }
+    const title = `${splitTitle[0]}${scope}: ${answers.gitmoji}${splitTitle[1]}`
     const isAutoAddEnabled = configurationVault.getAutoAdd()
 
     if (await isHookCreated()) {
